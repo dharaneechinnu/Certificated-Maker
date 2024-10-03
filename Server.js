@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs-extra');
@@ -6,7 +6,7 @@ const { createCanvas, loadImage, registerFont } = require('canvas');
 const path = require('path');
 const AdmZip = require('adm-zip');
 const cors = require('cors'); // Import cors
-const axios = require('axios'); // Import axios
+const axios = require('axios'); // Ensure axios is imported
 
 const app = express();
 const PORT = 3500;
@@ -45,8 +45,7 @@ const loadAndRegisterFonts = () => {
 // Endpoint to fetch Google Fonts
 app.get('/fonts', async (req, res) => {
   try {
-    const apiKey = process.env.APIKEY 
-    
+    const apiKey = process.env.APIKEY; // Get API key from environment variables
     const apiUrl = `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}`;
     const response = await axios.get(apiUrl);
     const fonts = response.data.items.map(font => ({
@@ -148,15 +147,18 @@ app.post(
           console.error('Error sending ZIP file:', err);
           res.status(500).send('An error occurred while downloading the ZIP file.');
         }
+// Clean up generated files after sending ZIP
+try {
+  // Remove all files inside the uploads directory without deleting the directory itself
+  const uploadsDir = path.join(__dirname, 'uploads');
+  fs.emptyDirSync(uploadsDir); // Use emptyDirSync to clear the contents of the uploads folder
+  
+  fs.removeSync(certificatesDir); // Clean up the entire certificates directory
+  fs.removeSync(zipPath); // Remove the ZIP file
+} catch (cleanupError) {
+  console.error('Error during cleanup:', cleanupError);
+}
 
-        // Clean up generated files after sending ZIP
-        try {
-         
-          fs.removeSync(certificatesDir); // Clean up the entire certificates directory
-          fs.removeSync(zipPath);
-        } catch (cleanupError) {
-          console.error('Error during cleanup:', cleanupError);
-        }
       });
     } catch (error) {
       console.error('Error generating certificates:', error);
