@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs-extra');
@@ -44,7 +45,8 @@ const loadAndRegisterFonts = () => {
 // Endpoint to fetch Google Fonts
 app.get('/fonts', async (req, res) => {
   try {
-    const apiKey = 'AIzaSyBpSKrG-5pfAULPgXhCfVnINaVEGF1WsOw'; // Replace with your actual Google API key
+    const apiKey = process.env.APIKEY 
+    
     const apiUrl = `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}`;
     const response = await axios.get(apiUrl);
     const fonts = response.data.items.map(font => ({
